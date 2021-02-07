@@ -94,4 +94,5 @@ $histogram = number_format($macd - $signalline,11);
 //echo " MACD ".$macd . "<br>";
 //echo " Signal line ".$signalline . "<br>";
 //echo " Histogram line".$histogram . "<br>";
+$connection->close();
 ?>
