@@ -49,4 +49,5 @@ $vwap4 = number_format($tpvp4/$nvol4,11);
 $vwap3 = number_format($tpvp3/$nvol3,11);
 $vwap2 = number_format($tpvp2/$nvol2,11);
 $vwap1 = number_format($tpvp1/$nvol1,11);
+$connection->close();
 ?>
