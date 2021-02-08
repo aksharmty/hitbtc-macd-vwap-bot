@@ -75,8 +75,9 @@ $macd8 = number_format($ma12h-$ma26h,11);
 $macd9 = number_format($ma12i-$ma26i,11);
 
 $macd = number_format($ma12a-$ma26a,11);
-$signalline = number_format($macd1+$macd2+$macd3+$macd4+$macd5+$macd6+$macd7+$macd8+$macd9/9,11);
-//MACD Histogram: MACD Line - Signal Line
+$signalline0 = $macd1+$macd2+$macd3+$macd4+$macd5+$macd6+$macd7+$macd8+$macd9);
+$signalline  = number_format($signalline0/9,11);
+  //MACD Histogram: MACD Line - Signal Line
 $histogram = number_format($macd - $signalline,11);
 ?>
 <!--table border="1">
