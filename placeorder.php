@@ -4,7 +4,7 @@ include "0vwap.php";
 echo " MACD ".$macd . "<br>";
 echo " Signal line ".$signalline . "<br>";
 echo " Histogram ".$histogram . "<br>";
-echo " VWAP ". $vwap5 . "<br>";
+echo " VWAP ". $vwap1 . "<br>";
 
 define('TIMEZONE', 'Asia/kolkata');
 date_default_timezone_set(TIMEZONE);
@@ -150,7 +150,7 @@ if ($typpp == "2") {
 
 <br>up BUY SIDE<br>
 <?php
-if($signalline > $macd && $hmas =="1") { echo "<br>Buy Trand start";
+if($signalline < $macd && $hmas =="1") { echo "<br>Buy Trand start";
 // buy code start
 $symbol = "$pair";
 $type = "limit";
@@ -160,7 +160,7 @@ $quantityb="$quantity";
 if($marketbalance > $dlastbal OR $waitprice > $bid){ echo "previous sell done";
 if($price > "0.000000001"){ echo "buy price check<br>";
 if($marketbalance > $btclow){ echo "buy fund enough";
-if($vwap5 < $lastclose && $lastclose <= $cuopen) { echo "<br>go to buy";
+if($vwap1 < $lastclose && $lastclose <= $cuopen) { echo "<br>go to buy";
 
 $ch = curl_init();
 //do a post
@@ -229,7 +229,7 @@ if($sellprice0 > $bidup1){ $sell = $sellprice0 ;} else { $sell = $bidup1;}
    echo "id: " . $id. " - pairs: " . $pairs. "sell price " . $sell. "sell quantity " . $quantitys. "lastbal " . $lastbal. "<br>";
  
 }
-if($vwap5 > $lastclose && $sellprice0 < $bidup1){ echo "<br>up sell Trand Start";
+if($vwap1 > $lastclose && $sellprice0 < $bidup1){ echo "<br>up sell Trand Start";
 echo "sell :<br>";
 $symbol = "$pairs";
 $type = "limit";
@@ -277,9 +277,9 @@ $querysellup = mysqli_query($connection,"update tradebtc set type = '1' , sell =
 $connection->close();
 ?>
 <?php
-if($vwap5 > $lastclose && $signalline < $macd){
+if($vwap1 > $lastclose && $signalline < $macd){
 $hhh = mysqli_query($connection,"update tradebtc set hmas ='3' where type ='0' AND id ='$idu'"); }
- if($signalline > $macd && $lastclose > $vwap5 && $hmas == "3"){ 
+ if($signalline > $macd && $lastclose > $vwap1 && $hmas == "3"){ 
  
  $hh = mysqli_query($connection,"update tradebtc set hmas ='1' where hmas = '3' AND id ='$idu'");
   }
