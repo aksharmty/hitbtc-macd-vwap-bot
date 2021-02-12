@@ -1,6 +1,11 @@
 <?php
 include "0macd.php";
 include "0vwap.php";
+include "leval.php";
+echo " new price ". $newprice . "<br>";
+echo " countt ".$countt . "<br>";
+echo " quantityt ".$quantityt . "<br>";
+echo "takeprofit ".$takeprofit . "<br>";
 echo " MACD ".$macd . "<br>";
 echo " Signal line ".$signalline . "<br>";
 echo " Histogram ".$histogram . "<br>";
@@ -85,13 +90,12 @@ $dlastbal = $askup0['dlastbal']; echo "<br>dlastbal :" , $dlastbal;
 $lastbal = $askup0['lastbal']; echo "<br>lastbal :" , $lastbal;
 $lastprice = $askup0['sellprice'];
 $waitprice = number_format($lastprice-$lastprice*5/100,11);echo "wait price ".$waitprice;
-$mp1 = $marketbalance-$marketbalance*90.715/100;//93.333/100;
+$mp1 = $marketbalance-$marketbalance*90.0/100; //
 echo "<br>mp1 ".$mp1;
 $qq0 = $mp1/$ask/"1"; //$qq0 = $marketbalance/$ask/"10"; 
 $quantityr=floor($qq0/10)*10; 
 if($typ == "0"){$quantity = $prequantity;}else{$quantity = $quantityr;}
 echo "<br> Qq", $quantity; $quantityd=$quantity*2; 
-$coinbalance1=floor($coinbalance/10)*10;
 
 ?>
 <?php
@@ -108,44 +112,6 @@ $sellprice = number_format($sell0,11, ".", ""); echo "<br>sellprice :",$sellpric
 $btcl = $quantity*$buy; $btclow = number_format($btcl,11);
 echo "<br>btc low :",$btclow;
 ?>
-<?php //average price start
-$sql2021 = "SELECT * FROM tradebtc where type ='0'";
-$result2021 = $connection->query($sql2021);
-
-if ($result2021->num_rows > 0) {
-  // output data of each row
-  while($row2021 = $result2021->fetch_assoc()) {
-   
-$corder = mysqli_fetch_array(mysqli_query($connection,"select * from tradebtc where type ='0' order by id desc limit 1"));
-$iduc = $corder['id']; $pricec = $corder['price']; $quantityc = $corder['quantity']; $ccost = number_format($pricec*$quantityc,11);
-echo "<br>iduc :" , $iduc . " Pricec ". $pricec . " quantityc " .$quantityc . " ccost ". $ccost;
-$porder = mysqli_fetch_array(mysqli_query($connection,"select * from tradebtc where type ='0' AND id < '$iduc' order by id desc limit 1"));
-$idup = $porder['id']; $pricep = $porder['price']; $quantityp = $porder['quantity']; $pcost = number_format($pricep*$quantityp,11);
-echo "<br>idup :" , $idup . " Pricep ". $pricep . " quantityp " .$quantityp . " pcost " .$pcost;
-$allqu = number_format($quantityp+$quantityc,1,".",""); $allcost = number_format($pcost+$ccost,11); 
-$newprice = number_format($allcost/$allqu,11,".","");
-$fnewprice = number_format($newprice+$newprice*0.25/100,11,".","");
-echo "<br> allq ".$allqu . " allcost ".$allcost . " newprice ".$newprice . " fnewprice ".$fnewprice;
- }
-} else {
-  echo "Type 0 not found";
-}
-
-$sql21 = mysqli_fetch_assoc(mysqli_query($connection,"SELECT COUNT(type) AS typp FROM tradebtc where type = '0'"));
-$typpp = $sql21['typp']; echo "<br> typpp ".$typpp;
-
-if ($typpp == "2") {
-  // output data of each row
-      echo "<br>update fnewprice<br>";
-    $hh21 = mysqli_query($connection,"update tradebtc set type ='5' where type = '0' AND id ='$idup'");
-    $hh22 = mysqli_query($connection,"update tradebtc set sellprice ='$fnewprice' , ma1='$allqu' where type = '0' AND id ='$iduc'");
-  
-} else {
-  echo "hhh0 results";
-}
-//average price start
-?>
-
 ///////////////////////////////
 
 <br>up BUY SIDE<br>
@@ -157,7 +123,8 @@ $type = "limit";
 $price = "$buy";
 $quantityb="$quantity";
 
-if($marketbalance > $dlastbal OR $waitprice > $bid){ echo "previous sell done";
+//if($marketbalance > $dlastbal OR $waitprice > $bid){ echo "previous sell done";
+if($countt <= "5"){ echo "previous sell done";
 if($price > "0.000000001"){ echo "buy price check<br>";
 if($marketbalance > $btclow){ echo "buy fund enough";
 if($vwap1 < $lastclose && $lastclose <= $cuopen) { echo "<br>go to buy";
@@ -211,11 +178,11 @@ $resulttrady = $connection->query($sql1sell);
 if ($resulttrady->num_rows > 0) {
 echo "type 0 for sell ";
 while($row = $resulttrady->fetch_assoc()) {
-    $id = $row["id"]; $pairs = $row["pair"]; $sellprice0 = $row["sellprice"]; $quantitys = $coinbalance1; //$row["quantity"]; 
+    $id = $row["id"]; $pairs = $row["pair"]; $sellprice0 = $row["sellprice"]; $quantitys = $row["quantity"]; 
     $lastbal = $row["lastbal"]; 
     echo "<br> bid  ",$bid.".<br>";
  //up sell vol   
- $quantitys05 = $quantitys*1.5; echo " quantity05 ". $quantitys05;
+ $quantitys05 = $quantityt*1.5; echo " quantity05 ". $quantitys05;
 $jsondata0up = file_get_contents("https://api.hitbtc.com/api/2/public/orderbook/DOGEBTC?volume=$quantitys05");
 $data0up = json_decode($jsondata0up, true);
 $array_bidup = $data0up['bid'];
@@ -223,19 +190,19 @@ foreach ($array_bidup as $rowup) { $bid0 = $rowup["price"];}
 $bidup1 = number_format($bid0,11);
 echo "<br>up sell price : ". $bidup1 ."<br>";
 
-if($sellprice0 > $bidup1){ $sell = $sellprice0 ;} else { $sell = $bidup1;} 
+if($takeprofit > $bidup1){ $sell = $takeprofit ;} else { $sell = $bidup1;} 
 
 //$sell = $sellprice0;
-   echo "id: " . $id. " - pairs: " . $pairs. "sell price " . $sell. "sell quantity " . $quantitys. "lastbal " . $lastbal. "<br>";
+   echo "id: " . $id. " - pairs: " . $pairs. "sell price " . $sell. "sell quantity " . $quantityt. "lastbal " . $lastbal. "<br>";
  
 }
-if($vwap1 > $lastclose && $sellprice0 < $bidup1){ echo "<br>up sell Trand Start";
+if($vwap1 > $lastclose && $takeprofit < $bidup1){ echo "<br>up sell Trand Start";
 echo "sell :<br>";
 $symbol = "$pairs";
 $type = "limit";
 $price1 = "$sell";
-$quantitys = "$quantitys";
-if($price1 > "0.00000001"){ echo "sell price check<br>";
+$quantitys = "$quantityt";
+if($price1 > "0.00000001" && $takeprofit > "0.00000001"){ echo "sell price check<br>";
 if($coinbalance >= $quantitys){ echo "sell fund enough";
 if($lastclose > $cuopen && $typ =="0"){ echo "go for sell";
  
@@ -277,10 +244,7 @@ $querysellup = mysqli_query($connection,"update tradebtc set type = '1' , sell =
 $connection->close();
 ?>
 <?php
-if($vwap1 > $lastclose && $signalline < $macd){
-$hhh = mysqli_query($connection,"update tradebtc set hmas ='3' where type ='0' AND id ='$idu'"); }
- if($signalline > $macd && $lastclose > $vwap1 && $hmas == "3"){ 
- 
- $hh = mysqli_query($connection,"update tradebtc set hmas ='1' where hmas = '3' AND id ='$idu'");
+ if($histogram > $macd){ echo " Macd low ";
+ $hh = mysqli_query($connection,"update tradebtc set hmas ='1' where id ='$idu'");
   }
 ?>
